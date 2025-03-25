@@ -1,0 +1,139 @@
+<%- include('layout/header') %>
+
+<div class="flex flex-col items-center bg-gradient-to-r from-gray-900 to-gray-800 min-h-screen p-6 text-white">
+    <div class=""><a href="/" class="">Bike Record</a></div>
+  <div class="w-full max-w-8xl bg-white bg-opacity-10 rounded-lg border border-gray-500 p-6">
+    <h1 class="bg-gradient-to-r from-gray-700 to-gray-900 text-white text-lg font-semibold p-4 rounded-t-lg text-center">
+      <%= product ? 'Edit Bike' : 'Insert Bike Record' %>
+    </h1>
+    <form
+      action="<%= product ? `/api/product/update/${product.id}` : '/api/product/add' %>"
+      method="post" id="product-form" enctype="multipart/form-data">      <div class="flex flex-row space-x-4">
+        <div class="flex flex-col flex-1">
+          <label for="name" class="text-gray-300 font-medium">Name</label>
+          <input type="text" name="name" placeholder="Enter vehicle name" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" value="<%= product ? product.name : '' %>" />
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="model_year" class="text-gray-300 font-medium">Model Year</label>
+          <input type="text" name="model_year" placeholder="Enter vehicle model" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" value="<%= product ? product.model_year : '' %>" />
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="mileage" class="text-gray-300 font-medium">Mileage</label>
+          <input type="text" name="mileage" placeholder="Enter vehicle mileage" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" value="<%= product ? product.mileage : '' %>" />
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="price" class="text-gray-300 font-medium">Price</label>
+          <input type="text" name="price" placeholder="Enter vehicle price" 
+                 class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" 
+                 value="<%= product ? product.price : '' %>" />
+        </div>
+      </div>
+      <div class="flex flex-row space-x-4 mt-4">
+        <div class="flex flex-col flex-1">
+          <label for="engine_cc" class="text-gray-300 font-medium">Engine CC</label>
+          <input type="text" name="engine_cc" placeholder="Enter vehicle engine_cc" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" value="<%= product ? product.engine_cc : '' %>" />
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="fuel_type" class="text-gray-300 font-medium">Fuel Type</label>
+          <select name="fuel_type" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white">
+            <!-- <option value="">Select Fuel Medium</option> -->
+            <option value="Petrol" <%= product && product.fuel_type === 'Petrol' ? 'selected' : '' %>>Petrol</option>
+            <option value="Electric" <%= product && product.fuel_type === 'Electric' ? 'selected' : '' %>>Electric</option>
+            <option value="Diesel" <%= product && product.fuel_type === 'Diesel' ? 'selected' : '' %>>Diesel</option>
+          </select>
+        </div>
+        <div class="flex flex-col flex-1">
+          <label for="color" class="text-gray-300 font-medium">Bike Color</label>
+          <input type="text" name="color" placeholder="Enter bike color" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" value="<%= product ? product.color : '' %>" />
+        </div>
+      </div>
+  
+      <div class="flex flex-row space-x-4 mt-4">
+        <div class="flex flex-col flex-1">
+          <label for="brand_id" class="text-gray-300 font-medium">Brand</label>
+          <select name="brand_id" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white">
+            <option value="">Select Brand</option>
+            <% if (brands && brands.length) { %>
+              <% brands.forEach(brand => { %>
+                <option value="<%= brand.id %>" 
+                  <%= product && product.brand_id == brand.id ? 'selected' : '' %>>
+                  <%= brand.name %>
+                </option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+    
+        <div class="flex flex-col flex-1">
+          <label for="image" class="text-gray-300 font-medium">Bike Image</label>
+          <input type="file" name="image" multiple accept="image/*"  class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" />
+        </div>
+        
+        <div class="flex flex-col flex-1">
+          <label for="transmission" class="text-gray-300 font-medium">Transmission</label>
+          <select name="transmission" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white">
+            <option value="Manual" <%= product && product.transmission === 'Manual' ? 'selected' : '' %>>Manual</option>
+            <option value="Automatic" <%= product && product.transmission === 'Automatic' ? 'selected' : '' %>>Automatic</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex flex-row space-x-4 mt-4">
+        <div class="flex flex-col flex-1">
+          <label for="abs" class="text-gray-300 font-medium">ABS</label>
+          <select name="abs" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white">
+            <option value="1" <%= product && product.abs === '1' ? 'selected' : '' %>>Yes</option>
+            <option value="0" <%= product && product.abs === '0' ? 'selected' : '' %>>No</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-4">
+        <label for="description" class="text-gray-300 font-medium">Description</label>
+        <textarea name="description" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white"><%= product ? product.description : '' %></textarea>
+      </div>
+      <button type="submit" class="w-full bg-gray-900 text-white font-medium p-3 rounded-lg transition duration-300">
+        <%= product ? 'Update Bike' : 'Insert Bike' %>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+
+document.getElementById("product-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const action = e.target.action;
+  
+  // Explicitly set method based on action
+  const method = action.includes('update') ? 'PUT' : 'POST';
+
+  try {
+    const response = await fetch(action, {
+      method: method,
+      body: formData,
+    });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      throw new Error(`Server returned HTML instead of JSON: ${text.substring(0, 100)}`);
+    }
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message || "Bike updated successful");
+      window.location.href = "/"; 
+    } else {
+      alert(result.error || "Error processing request");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert(`Error: ${error.message}`);
+  }
+});
+</script>
+<%- include('layout/footer') %>
+

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title%></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/react-hot-toast@2.0.0/dist/index.umd.min.js"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .profile-dropdown {
+        transition: opacity 0.3s ease-in-out, transform 0.2s ease;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <nav class="bg-gray-800 text-white px-6 py-3 shadow-md sticky top-0">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="/">
+          <img
+            src="/assets/Logo.png"
+            alt="Logo"
+            class="w-16 h-16 rounded-full"
+          />
+        </a>
+
+        <ul class="hidden md:flex space-x-8 text-lg">
+          <li>
+            <a href="/" class="hover:text-gray-300"
+              ><i class="fa-solid fa-house"></i> Home</a
+            >
+          </li>
+          <li>
+            <a href="/add-vehicle" class="hover:text-gray-300"
+              ><i class="fa-solid fa-folder-plus"></i> Add Bike</a
+            >
+          </li>
+          <li>
+            <a href="/add-model" class="hover:text-gray-300"
+              ><i class="fa-solid fa-folder-plus"></i> Add Bike Brand</a
+            >
+          </li>
+          <!-- <li><a href="/about-us" class="hover:text-gray-300"><i class="fa-solid fa-address-card"></i> About</a></li>
+          <li><a href="/contact" class="hover:text-gray-300"><i class="fa-solid fa-address-book"></i> Contact</a></li> -->
+        </ul>
+
+        <button id="menu-btn" class="md:hidden text-2xl">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="relative">
+          <button
+            id="profile-btn"
+            class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-700"
+          >
+            <i class="fa-solid fa-circle-user text-xl"></i>
+          </button>
+
+          <div
+            id="profile-menu"
+            class="hidden absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-md profile-dropdown"
+          >
+            <a
+              href="#"
+              id="sidebar-profile"
+              class="block px-4 py-2 hover:bg-gray-200"
+              >Profile</a
+            >
+            <a href="#" class="block px-4 py-2 hover:bg-gray-200"
+              >Change Password</a
+            >
+            <a href="#" class="block px-4 py-2 hover:bg-gray-200">Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden flex flex-col space-y-2 mt-4 bg-gray-900 text-white py-3 px-6 rounded-md"
+      >
+        <a href="/" class="block py-2"
+          ><i class="fa-solid fa-house"></i> Home</a
+        >
+        <a href="/add-vehicle" class="block py-2"
+          ><i class="fa-solid fa-folder-plus"></i> Add Vehicle</a
+        >
+        <a href="/add-model" class="block py-2"
+          ><i class="fa-solid fa-folder-plus"></i> Add Model</a
+        >
+        <!-- <a href="/about-us" class="block py-2"><i class="fa-solid fa-address-card"></i> About</a>
+        <a href="/contact" class="block py-2"><i class="fa-solid fa-address-book"></i> Contact</a> -->
+      </div>
+    </nav>
+
+    <script>
+      document
+        .getElementById("profile-btn")
+        .addEventListener("click", function () {
+          document.getElementById("profile-menu").classList.toggle("hidden");
+        });
+
+      document
+        .getElementById("menu-btn")
+        .addEventListener("click", function () {
+          document.getElementById("mobile-menu").classList.toggle("hidden");
+        });
+
+      window.addEventListener("click", function (e) {
+        const profileMenu = document.getElementById("profile-menu");
+        if (
+          !document.getElementById("profile-btn").contains(e.target) &&
+          !profileMenu.contains(e.target)
+        ) {
+          profileMenu.classList.add("hidden");
+        }
+      });
+
+      document
+        .getElementById("sidebar-profile")
+        .addEventListener("click", function (event) {
+          event.preventDefault();
+          fetch("/profile")
+            .then((response) => response.text())
+            .then((data) => {
+              document.querySelector(".flex-grow").innerHTML = data;
+              history.pushState({}, "", "/profile");
+            })
+            .catch((error) => console.error("Error loading profile:", error));
+        });
+    </script>
+  </body>
+</html>

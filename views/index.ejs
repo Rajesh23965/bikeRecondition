@@ -1,0 +1,168 @@
+<%- include('layout/header') %>
+
+<div class="bg-gradient-to-r from-gray-900 to-gray-800 min-h-screen p-6">
+  <button
+    class="bg-green-700 hover:bg-green-900 p-2 rounded-xl text-white mb-6"
+  >
+    <a href="/add-vehicle" class="text-white no-underline">Add Bike</a>
+  </button>
+  <div class="mb-4 flex justify-between items-center">
+    <div class="w-1/3">
+      <input 
+        type="text" 
+        id="searchBike" 
+        placeholder="Search bikes..." 
+        class="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+      >
+    </div>
+    <div class="flex items-center space-x-2">
+      <span class="text-gray-300">Items per page:</span>
+      <select 
+        id="limitSelect" 
+        class="bg-gray-700 border border-gray-600 text-white rounded-lg p-2"
+      >
+        <option value="5" <%= pagination.limit == 5 ? 'selected' : '' %>>5</option>
+        <option value="10" <%= pagination.limit == 10 ? 'selected' : '' %>>10</option>
+        <option value="20" <%= pagination.limit == 20 ? 'selected' : '' %>>20</option>
+        <option value="50" <%= pagination.limit == 50 ? 'selected' : '' %>>50</option>
+      </select>
+    </div>
+  </div>
+  <div
+    class="overflow-x-auto bg-gray-800 shadow-lg rounded-lg border border-gray-600"
+  >
+    <table class="w-full text-white rounded-md">
+      <thead class="bg-gradient-to-r from-gray-700 to-gray-900 text-white">
+        <tr>
+          <th class="py-4 px-6 text-left">S.N.</th>
+          <th class="py-4 px-6 text-left">Bike Name</th>
+          <th class="py-4 px-6 text-left">Model Year</th>
+          <th class="py-4 px-6 text-left">Mileage</th>
+          <th class="py-4 px-6 text-left">Color</th>
+          <th class="py-4 px-6 text-left">Price</th>
+          <th class="py-4 px-6 text-left">Engine CC</th>
+          <th class="py-4 px-6 text-left">Fuel Type</th>
+          <th class="py-4 px-6 text-left">Image</th>
+          <th class="py-4 px-6 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (vehicle && vehicle.length > 0) { %> 
+          <% vehicle.forEach((vh, index) => { %>
+            <tr class="border-b border-gray-600 hover:bg-gray-700 transition">
+              <td class="py-4 px-6">
+                <%= (pagination.currentPage - 1) * pagination.limit + index + 1 %>
+              </td>
+          <td class="py-4 px-6"><%= vh.name %></td>
+          <td class="py-4 px-6"><%= vh.model_year %></td>
+          <td class="py-4 px-6"><%= vh.mileage %></td>
+          <td class="py-4 px-6"><%= vh.color %></td>
+          <td class="py-4 px-6"><%= vh.price %></td>
+          <td class="py-4 px-6"><%= vh.engine_cc %></td>
+          <td class="py-4 px-6"><%= vh.fuel_type %></td>
+          <td class="py-4 px-6">
+            <% if (vh.image && vh.image.split(',').length > 0) { %>
+            <img
+              src="/uploads/<%= vh.image.split(',')[0] %>"
+              alt="<%= vh.name %> Bike Image"
+              class="h-12 w-12 object-cover rounded-md border border-gray-500 shadow-md"
+            />
+            <% } else { %>
+            <div
+              class="h-12 w-12 bg-gray-700 rounded-md flex items-center justify-center text-gray-400"
+            >
+              No Image
+            </div>
+            <% } %>
+          </td>
+          <td class="py-4 px-6 flex space-x-4">
+            <a
+              href="/add-vehicle/<%= vh.id %>"
+              class="text-blue-400 hover:text-blue-300 transition font-medium"
+            >
+              Edit
+            </a>
+            <button
+              onclick="deleteProduct('<%= vh.id %>')"
+              class="text-red-400 hover:text-red-300 transition font-medium"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+        <% }) %> <% } else { %>
+        <tr>
+          <td colspan="10" class="py-6 text-center text-gray-400">
+            No vehicles found.
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+    <% if (pagination && pagination.totalPages > 1) { %>
+      <div class="flex justify-center mt-6">
+        <div class="flex items-center space-x-2">
+          <% if (pagination.currentPage > 1) { %>
+          <a
+            href="/?page=<%= pagination.currentPage - 1 %>&limit=<%= pagination.limit %>"
+            class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
+          >
+            Previous
+          </a>
+          <% } %> <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+          <a
+            href="/?page=<%= i %>&limit=<%= pagination.limit %>"
+            class="px-4 py-2 <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-700 text-white' %> rounded hover:bg-gray-600 transition"
+          >
+            <%= i %>
+          </a>
+          <% } %> <% if (pagination.currentPage < pagination.totalPages) { %>
+          <a
+            href="/?page=<%= pagination.currentPage + 1 %>&limit=<%= pagination.limit %>"
+            class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
+          >
+            Next
+          </a>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+  </div>
+</div>
+
+<script>
+  async function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      const response = await fetch(`/api/product/delete/${productId}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(result.msg);
+        window.location.reload();
+      } else {
+        alert(result.error || "Error deleting product");
+      }
+    }
+  }
+
+// Handle limit change
+document.getElementById('limitSelect').addEventListener('change', function() {
+    const limit = this.value;
+    window.location.href = `/?page=1&limit=${limit}`;
+  });
+
+  // Simple search functionality
+  document.getElementById('searchBike').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    document.querySelectorAll('tbody tr').forEach(row => {
+      const brandName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+      row.style.display = brandName.includes(searchTerm) ? '' : 'none';
+    });
+  });
+
+</script>
+
+<%- include('layout/footer.ejs') %>
